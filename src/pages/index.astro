@@ -24,64 +24,68 @@ const elsewhere = [
 
   <main class="page-light grain">
     {/* ── Identity ──────────────────────────────────────────── */}
-    <header class="px-6 pt-20 pb-16 sm:pt-28 sm:pb-20">
+    <header class="px-6 pt-20 pb-16 sm:pt-24 sm:pb-20">
       <div class="mx-auto max-w-6xl">
-        <div class="max-w-[62ch]">
-          <h1
-            class="font-display uppercase leading-[0.9] tracking-[-0.025em]"
-            style="font-size: clamp(2.75rem,8vw,5.75rem); font-stretch: 78%; font-weight: 600"
-          >
-            Dmytro<br />Omelchenko
-          </h1>
+        <h1
+          class="font-display uppercase leading-[0.88] tracking-[-0.03em]"
+          style="font-size: clamp(2.75rem,12.4vw,9.75rem); font-stretch: 74%; font-weight: 600"
+        >
+          Dmytro<br />Omelchenko
+        </h1>
 
-          <p
-            class="enter font-prose text-[clamp(1.25rem,2.6vw,1.75rem)] leading-[1.5] mt-10 max-w-[34ch] text-ink"
-            style="--enter-delay: 90ms"
-          >
-            {profile.positioning}
-          </p>
+        {/* Name spans the full measure; everything below it splits, so the
+            right half carries content instead of empty ground. */}
+        <div class="mt-14 grid gap-x-16 gap-y-12 lg:grid-cols-12 lg:mt-16">
+          <div class="lg:col-span-7">
+            <p
+              class="enter font-prose text-[clamp(1.3rem,2.6vw,1.9rem)] leading-[1.45] max-w-[30ch] text-ink"
+              style="--enter-delay: 90ms"
+            >
+              {profile.positioning}
+            </p>
 
-          <p
-            class="enter font-prose text-[15px] leading-[1.75] mt-6 max-w-[58ch] text-ink-dim"
-            style="--enter-delay: 160ms"
-          >
-            {profile.intro}
-          </p>
-
-          <ul class="enter mt-14 grid grid-cols-3 gap-x-8 gap-y-5 max-w-xl list-none p-0" style="--enter-delay: 230ms">
-            {
-              proofMarkers.map((m) => (
-                <li>
-                  <p
-                    class="font-display text-gold text-[clamp(1.7rem,4vw,2.4rem)] tabular-nums leading-none"
-                    style="font-stretch: 84%; font-weight: 500"
-                  >
-                    {m.value}
-                  </p>
-                  <p class="micro mt-3 leading-[1.6] max-w-[18ch]">{m.label}</p>
-                </li>
-              ))
-            }
-          </ul>
-
-          <p class="enter micro mt-12 flex flex-wrap items-center gap-3" style="--enter-delay: 290ms">
-            <span aria-hidden="true" class="inline-block w-[7px] h-[7px] rounded-full bg-gold"></span>
-            {profile.availability}
-            <span class="text-panel-edge" aria-hidden="true">|</span>
-            {profile.location}, {profile.timezone}
-          </p>
-
-          <div class="enter mt-7 flex flex-wrap items-center gap-x-7 gap-y-3" style="--enter-delay: 350ms">
-            <a href={`mailto:${profile.email}`} class="edge-grow font-mono text-[12px] tracking-[0.1em] text-gold">
-              {profile.email}
-            </a>
-            <a href={url(profile.cv)} class="edge-grow font-mono text-[12px] tracking-[0.1em] text-ink-dim">
-              Download CV
-            </a>
+            <p
+              class="enter font-prose text-[clamp(15px,1.2vw,16.5px)] leading-[1.75] mt-7 max-w-[58ch] text-ink-dim"
+              style="--enter-delay: 160ms"
+            >
+              {profile.intro}
+            </p>
           </div>
 
-        </div>
+          <div class="lg:col-span-5">
+            <ul class="enter list-none p-0 m-0" style="--enter-delay: 230ms">
+              {
+                proofMarkers.map((m) => (
+                  <li class="flex items-baseline gap-5 py-4 border-b border-[#221d14] last:border-0">
+                    <span
+                      class="font-display text-gold text-[clamp(1.6rem,2.6vw,2.1rem)] tabular-nums leading-none w-[4.5ch] shrink-0"
+                      style="font-stretch: 84%; font-weight: 500"
+                    >
+                      {m.value}
+                    </span>
+                    <span class="micro leading-[1.5]">{m.label}</span>
+                  </li>
+                ))
+              }
+            </ul>
 
+            <p class="enter micro mt-9 flex flex-wrap items-center gap-3" style="--enter-delay: 290ms">
+              <span aria-hidden="true" class="inline-block w-[7px] h-[7px] rounded-full bg-gold"></span>
+              {profile.availability}
+              <span class="text-panel-edge hidden sm:inline" aria-hidden="true">|</span>
+              {profile.location}, {profile.timezone}
+            </p>
+
+            <div class="enter mt-6 flex flex-wrap items-center gap-x-7 gap-y-3" style="--enter-delay: 350ms">
+              <a href={`mailto:${profile.email}`} class="edge-grow font-mono text-[12px] tracking-[0.1em] text-gold">
+                {profile.email}
+              </a>
+              <a href={url(profile.cv)} class="edge-grow font-mono text-[12px] tracking-[0.1em] text-ink-dim">
+                Download CV
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
     </header>
 
