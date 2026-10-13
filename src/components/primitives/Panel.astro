@@ -1,0 +1,19 @@
+---
+/**
+ * A chamfered surface with a 1px outline that is brass where the light
+ * lands and dissolves toward the bottom, so it reads as lit rather than
+ * outlined. Gradient-filled wrapper + inset child is what lets the
+ * outline follow the chamfer.
+ */
+interface Props {
+  class?: string;
+  innerClass?: string;
+}
+const { class: className = "", innerClass = "" } = Astro.props;
+---
+
+<div class={`panel chamfer ${className}`}>
+  <div class={`panel-body chamfer-inner ${innerClass}`}>
+    <slot />
+  </div>
+</div>

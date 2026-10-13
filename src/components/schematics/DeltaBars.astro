@@ -1,0 +1,32 @@
+---
+/** Before and after, to scale. The only honest way to draw a percentage. */
+interface Props {
+  before: number;
+  after: number;
+  beforeLabel?: string;
+  afterLabel?: string;
+}
+
+const { before, after, beforeLabel = "Before", afterLabel = "After" } = Astro.props;
+const max = Math.max(before, after);
+const rows = [
+  { label: beforeLabel, pct: (before / max) * 100, lit: false },
+  { label: afterLabel, pct: (after / max) * 100, lit: true },
+];
+---
+
+<div class="space-y-4" role="img" aria-label={`${beforeLabel} versus ${afterLabel}`}>
+  {
+    rows.map((r) => (
+      <div>
+        <p class="micro mb-2">{r.label}</p>
+        <div class="h-3 bg-[#0f0d08] border border-[#2a2317]">
+          <div
+            class="h-full"
+            style={`width: ${r.pct}%; background: ${r.lit ? "var(--color-gold)" : "color-mix(in srgb, var(--color-gold) 26%, transparent)"}`}
+          />
+        </div>
+      </div>
+    ))
+  }
+</div>

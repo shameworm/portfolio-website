@@ -1,0 +1,50 @@
+---
+/**
+ * One cell per evaluation. The grid is the point: a suite is only
+ * meaningful at a density you can see all at once.
+ *
+ * Lit cells are a fixed, deliberate scatter with no row or column
+ * regularity — an earlier set landed on a diagonal and read as decoration.
+ */
+interface Props {
+  total?: number;
+  columns?: number;
+  coverage?: readonly string[];
+  class?: string;
+}
+
+const { total = 120, columns = 12, coverage, class: className = "" } = Astro.props;
+
+const LIT = new Set([5, 19, 23, 38, 44, 61, 70, 86, 91, 103, 112]);
+const cells = Array.from({ length: total }, (_, i) => LIT.has(i));
+---
+
+<div class={className}>
+  <ul
+    class="grid gap-[5px] list-none p-0 m-0"
+    style={`grid-template-columns: repeat(${columns}, minmax(0, 1fr))`}
+    aria-hidden="true"
+  >
+    {
+      cells.map((lit) => (
+        <li
+          class="aspect-square chamfer-cell border"
+          style={
+            lit
+              ? "border-color: var(--color-gold); background: color-mix(in srgb, var(--color-gold) 30%, transparent)"
+              : "border-color: #352c1c; background: #0f0d08"
+          }
+        />
+      ))
+    }
+  </ul>
+  {
+    coverage && (
+      <ul class="micro mt-5 flex flex-wrap gap-x-4 gap-y-2 list-none p-0">
+        {coverage.map((c) => (
+          <li>{c}</li>
+        ))}
+      </ul>
+    )
+  }
+</div>

@@ -1,0 +1,164 @@
+---
+/**
+ * Annotated node graph. Thin strokes, chamfered boxes, orthogonal routing —
+ * the language of a technical schematic rather than a flowchart.
+ *
+ * Node labels describe architectural patterns only, never proprietary
+ * internals. See the content-safety rule in the spec.
+ */
+import type { FlowEdge, FlowNode } from "./types";
+
+interface Props {
+  nodes: FlowNode[];
+  edges: FlowEdge[];
+  caption?: string;
+}
+
+const { nodes, edges, caption } = Astro.props;
+
+const BOX_W = 116;
+const BOX_H = 46;
+const COL_GAP = 80;
+const ROW_GAP = 30;
+const CUT = 7;
+const PAD = 16;
+
+function chamferPoints(x: number, y: number, w: number, h: number): string {
+  return [
+    `${x + CUT},${y}`,
+    `${x + w},${y}`,
+    `${x + w},${y + h - CUT}`,
+    `${x + w - CUT},${y + h}`,
+    `${x},${y + h}`,
+    `${x},${y + CUT}`,
+  ].join(" ");
+}
+
+const minRow = Math.min(...nodes.map((n) => n.row));
+const cols = Math.max(...nodes.map((n) => n.col)) + 1;
+const rows = Math.max(...nodes.map((n) => n.row)) - minRow + 1;
+
+const width = PAD * 2 + cols * BOX_W + (cols - 1) * COL_GAP;
+const height = PAD * 2 + rows * BOX_H + (rows - 1) * ROW_GAP;
+
+const at = (n: FlowNode) => ({
+  x: PAD + n.col * (BOX_W + COL_GAP),
+  y: PAD + (n.row - minRow) * (BOX_H + ROW_GAP),
+});
+
+const byId = new Map(nodes.map((n) => [n.id, n]));
+
+// Orthogonal routing: out, across, in. Reads as wiring, not flow.
+const routed = edges.flatMap((e) => {
+  const a = byId.get(e.from);
+  const b = byId.get(e.to);
+  if (!a || !b) return [];
+  const pa = at(a);
+  const pb = at(b);
+  const x1 = pa.x + BOX_W;
+  const y1 = pa.y + BOX_H / 2;
+  const x2 = pb.x;
+  const y2 = pb.y + BOX_H / 2;
+  const mid = x1 + (x2 - x1) / 2;
+  return [
+    {
+      key: `${e.from}-${e.to}`,
+      label: e.label,
+      labelX: mid,
+      labelY: Math.min(y1, y2) - 11,
+      d: y1 === y2 ? `M${x1},${y1} H${x2 - 2}` : `M${x1},${y1} H${mid} V${y2} H${x2 - 2}`,
+    },
+  ];
+});
+
+const placed = nodes.map((n) => ({ ...n, ...at(n) }));
+const uid = nodes.map((n) => n.id).join("-").replace(/[^a-z0-9-]/gi, "");
+---
+
+<figure class="m-0">
+  <div class="schematic-scroll">
+    <svg
+      viewBox={`0 0 ${width} ${height}`}
+      class="w-full h-auto"
+      role="img"
+      aria-label={caption ?? "Architecture schematic"}
+    >
+      <defs>
+        <marker
+          id={`arrow-${uid}`}
+          viewBox="0 0 8 8"
+          refX="7"
+          refY="4"
+          markerWidth="7"
+          markerHeight="7"
+          orient="auto"
+        >
+          <path d="M0,1 L7,4 L0,7" fill="none" stroke="var(--color-gold-deep)" stroke-width="1" />
+        </marker>
+      </defs>
+
+      {
+        routed.map((r) => (
+          <g>
+            <path
+              d={r.d}
+              fill="none"
+              stroke="var(--color-gold-deep)"
+              stroke-width="1"
+              marker-end={`url(#arrow-${uid})`}
+            />
+            {r.label && (
+              <text
+                x={r.labelX}
+                y={r.labelY}
+                text-anchor="middle"
+                font-family="var(--font-mono)"
+                font-size="8.5"
+                letter-spacing="0.12em"
+                fill="var(--color-ink-dim)"
+              >
+                {r.label}
+              </text>
+            )}
+          </g>
+        ))
+      }
+
+      {
+        placed.map((n) => (
+          <g>
+            <polygon
+              points={chamferPoints(n.x, n.y, BOX_W, BOX_H)}
+              fill="var(--color-panel)"
+              stroke={n.lit ? "var(--color-gold)" : "var(--color-panel-edge)"}
+              stroke-width="1"
+            />
+            <text
+              x={n.x + 11}
+              y={n.sub ? n.y + 20 : n.y + 27}
+              font-family="var(--font-mono)"
+              font-size="10"
+              letter-spacing="0.1em"
+              fill={n.lit ? "var(--color-gold)" : "var(--color-ink)"}
+            >
+              {n.label}
+            </text>
+            {n.sub && (
+              <text
+                x={n.x + 11}
+                y={n.y + 34}
+                font-family="var(--font-mono)"
+                font-size="8.5"
+                letter-spacing="0.08em"
+                fill="var(--color-ink-dim)"
+              >
+                {n.sub}
+              </text>
+            )}
+          </g>
+        ))
+      }
+    </svg>
+  </div>
+  {caption && <figcaption class="font-mono text-[11px] text-ink-dim mt-4">{caption}</figcaption>}
+</figure>

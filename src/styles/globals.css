@@ -1,0 +1,311 @@
+@import "tailwindcss";
+
+/* ───────────────────────────────────────────────────────────────
+   TRIPTYCH — design tokens
+   Renaissance chiaroscuro, machined geometry. One light source.
+   ─────────────────────────────────────────────────────────────── */
+
+@theme {
+  /* Warm near-black. Never blue-black. */
+  --color-void: #0a0906;
+  --color-panel: #191509;
+  --color-panel-edge: #1e1a12;
+
+  --color-ink: #e6dfd0;
+  --color-ink-dim: #9a9284;
+
+  /* Brass, not yellow. */
+  --color-gold: #c8a24a;
+  --color-gold-bright: #e8c877;
+  --color-gold-deep: #8a6d2a;
+
+  --font-display: "Archivo Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-prose: "Source Serif 4 Variable", ui-serif, Georgia, serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  --font-mono-alt: "JetBrains Mono", ui-monospace, monospace;
+
+  --ease-settle: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+:root {
+  --chamfer: 14px;
+  --chamfer-inner: 13px;
+  --rule: color-mix(in srgb, var(--color-gold-deep) 55%, transparent);
+}
+
+/* ── Geometry ─────────────────────────────────────────────────── */
+/* One angle (45°), one size, cut top-left + bottom-right only.
+   Four-corner chamfers are what make sci-fi UI kits look generic. */
+
+.chamfer {
+  clip-path: polygon(
+    var(--chamfer) 0,
+    100% 0,
+    100% calc(100% - var(--chamfer)),
+    calc(100% - var(--chamfer)) 100%,
+    0 100%,
+    0 var(--chamfer)
+  );
+}
+
+.chamfer-inner {
+  clip-path: polygon(
+    var(--chamfer-inner) 0,
+    100% 0,
+    100% calc(100% - var(--chamfer-inner)),
+    calc(100% - var(--chamfer-inner)) 100%,
+    0 100%,
+    0 var(--chamfer-inner)
+  );
+}
+
+/* A true machined 1px outline that follows the chamfer: gradient-filled
+   wrapper + inset child. The outline is bright at the top and dissolves
+   toward the bottom, so the panel reads as lit from above. */
+.panel {
+  padding: 1px;
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--color-gold) 78%, transparent) 0%,
+    var(--color-gold-deep) 22%,
+    var(--color-panel-edge) 62%,
+    #1a1610 100%
+  );
+}
+
+.panel > .panel-body {
+  background: var(--color-panel);
+  height: 100%;
+}
+
+/* ── Light ────────────────────────────────────────────────────── */
+/* ONE source for the whole document, off-screen top-left, with a long
+   falloff down the page. Per-section gradients were six light sources
+   stacked — they banded, which is the opposite of chiaroscuro. */
+
+.page-light {
+  position: relative;
+  isolation: isolate;
+}
+
+.page-light::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2200px;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+    90% 100% at 2% -6%,
+    color-mix(in srgb, var(--color-gold) 17%, transparent),
+    color-mix(in srgb, var(--color-gold) 6%, transparent) 38%,
+    color-mix(in srgb, var(--color-gold) 2%, transparent) 62%,
+    transparent 82%
+  );
+}
+
+/* Opt-in secondary glow, for at most one section far below the fold
+   where the page would otherwise go completely flat. */
+.bleed {
+  position: relative;
+  isolation: isolate;
+}
+
+.bleed::before {
+  content: "";
+  position: absolute;
+  inset: -45% 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+    65% 60% at 14% 50%,
+    color-mix(in srgb, var(--color-gold) 7%, transparent),
+    transparent 70%
+  );
+}
+
+/* ── Atmosphere ───────────────────────────────────────────────── */
+/* One grain layer. No scanlines — they are the fan-page tell and
+   they measurably hurt legibility. */
+
+.grain::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  opacity: 0.035;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>");
+}
+
+/* ── Hairlines ────────────────────────────────────────────────── */
+/* Rules separate. They never box. */
+
+.rule {
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--color-gold) 70%, transparent),
+    color-mix(in srgb, var(--color-gold-deep) 45%, transparent) 65%,
+    transparent
+  );
+}
+
+/* ── Micro-type ───────────────────────────────────────────────── */
+
+.micro {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.2;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-ink-dim);
+}
+
+/* ── Motion ───────────────────────────────────────────────────── */
+/* A hairline that grows from one edge. No glow, no bounce, no scale. */
+
+.edge-grow {
+  position: relative;
+}
+
+.edge-grow::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  height: 1px;
+  width: 100%;
+  background: var(--color-gold);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 300ms var(--ease-settle);
+}
+
+.edge-grow:hover::after,
+.edge-grow:focus-visible::after {
+  transform: scaleX(1);
+}
+
+/* ── Base ─────────────────────────────────────────────────────── */
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  background: var(--color-void);
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--color-gold-deep);
+  color: var(--color-ink);
+}
+
+:focus-visible {
+  outline: 1px solid var(--color-gold);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ── Entrance ─────────────────────────────────────────────────── */
+/* One orchestrated sequence per page load. Not a reveal on every
+   section — scattered fade-ups are the generated-page tell. */
+
+@keyframes settle {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Schematic viewport ───────────────────────────────────────── */
+
+.schematic-scroll {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-gold-deep) transparent;
+}
+
+.schematic-scroll > svg {
+  min-width: 540px;
+}
+
+/* Cell-scale chamfer, for the evaluation grid. */
+.chamfer-cell {
+  clip-path: polygon(3px 0, 100% 0, 100% calc(100% - 3px), calc(100% - 3px) 100%, 0 100%, 0 3px);
+}
+
+/* ── Entrance utility ─────────────────────────────────────────── */
+/* One sequence, on load, above the fold. Not a reveal per section. */
+
+.enter {
+  opacity: 0;
+  animation: settle 600ms var(--ease-settle) var(--enter-delay, 0ms) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .enter {
+    opacity: 1;
+    animation: none;
+  }
+}
+
+/* ── Skip link ────────────────────────────────────────────────── */
+
+.skip {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+}
+
+.skip:focus {
+  left: 1rem;
+  top: 1rem;
+  padding: 0.6rem 1rem;
+  background: var(--color-panel);
+  border: 1px solid var(--color-gold);
+  color: var(--color-ink);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+/* ── Company marks ────────────────────────────────────────────── */
+/* Three saturated brand palettes would overwhelm the gold budget, so the
+   marks sit muted and resolve to full colour on hover or focus. */
+
+.mark {
+  filter: grayscale(0.55) brightness(0.95);
+  opacity: 0.88;
+  transition:
+    filter 300ms var(--ease-settle),
+    opacity 300ms var(--ease-settle);
+}
+
+a:hover .mark,
+a:focus-visible .mark,
+li:hover .mark {
+  filter: none;
+  opacity: 1;
+}

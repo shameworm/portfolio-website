@@ -1,0 +1,9 @@
+---
+/** A hairline. Rules separate; they never box. */
+interface Props {
+  class?: string;
+}
+const { class: className = "" } = Astro.props;
+---
+
+<div class={`rule ${className}`} role="presentation"></div>

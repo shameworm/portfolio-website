@@ -1,0 +1,9 @@
+---
+/** Monospace micro-type for metadata. Never for prose. */
+interface Props {
+  class?: string;
+}
+const { class: className = "" } = Astro.props;
+---
+
+<p class={`micro ${className}`}><slot /></p>

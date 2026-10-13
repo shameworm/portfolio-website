@@ -1,0 +1,187 @@
+---
+import Base from "@/layouts/Base.astro";
+import Panel from "@/components/primitives/Panel.astro";
+import Label from "@/components/primitives/Label.astro";
+import Rule from "@/components/primitives/Rule.astro";
+import FlowSchematic from "@/components/schematics/FlowSchematic.astro";
+import EvalGrid from "@/components/schematics/EvalGrid.astro";
+import { cases } from "@/content/cases";
+import { profile } from "@/content/profile";
+
+export function getStaticPaths() {
+  return cases.map((c, i) => ({
+    params: { slug: c.slug },
+    props: { study: c, next: cases[(i + 1) % cases.length] },
+  }));
+}
+
+const { study: c, next } = Astro.props;
+
+const meta = [
+  { k: "Client", v: c.client },
+  { k: "Role", v: c.role },
+  { k: "Period", v: c.period },
+];
+---
+
+<Base title={`${c.title} — ${profile.name}`} description={c.thesis}>
+  <main class="page-light grain">
+    {/* ── Masthead ──────────────────────────────────────────── */}
+    <header class="px-6 pt-14 pb-16 sm:pt-16">
+      <div class="mx-auto max-w-4xl">
+        <a href="/" class="edge-grow font-mono text-[12px] tracking-[0.1em] text-ink-dim">
+          {profile.name}
+        </a>
+
+        <Label class="text-gold mt-14">{c.domain}</Label>
+
+        <h1
+          class="font-display text-[clamp(2rem,5.5vw,3.6rem)] leading-[1.05] tracking-[-0.02em] mt-5 max-w-[20ch]"
+          style="font-stretch: 82%; font-weight: 600"
+        >
+          {c.title}
+        </h1>
+
+        <p
+          class="enter font-prose text-[clamp(1.05rem,2vw,1.25rem)] leading-[1.6] text-ink-dim mt-7 max-w-[60ch]"
+          style="--enter-delay: 90ms"
+        >
+          {c.thesis}
+        </p>
+
+        <Rule class="my-9" />
+
+        <dl class="grid gap-x-10 gap-y-6 sm:grid-cols-4">
+          {
+            meta.map((m) => (
+              <div>
+                <dt class="micro">{m.k}</dt>
+                <dd class="font-display text-[15px] mt-2 m-0">{m.v}</dd>
+              </div>
+            ))
+          }
+          <div>
+            <dt class="micro">Stack</dt>
+            <dd class="font-display text-[15px] mt-2 m-0 flex flex-wrap gap-x-4 gap-y-1">
+              {c.stack.map((s) => <span>{s}</span>)}
+            </dd>
+          </div>
+        </dl>
+      </div>
+    </header>
+
+    {/* ── The problem ───────────────────────────────────────── */}
+    <section class="px-6 py-10">
+      <div class="mx-auto max-w-4xl">
+        <h2 class="font-display text-[1.5rem] mb-7" style="font-stretch: 86%; font-weight: 500">
+          The problem
+        </h2>
+        <div class="space-y-5 max-w-[66ch]">
+          {c.problem.map((p) => <p class="font-prose text-[17px] leading-[1.75]">{p}</p>)}
+        </div>
+      </div>
+    </section>
+
+    {/* ── The build ─────────────────────────────────────────── */}
+    <section class="bleed px-6 py-10">
+      <div class="mx-auto max-w-4xl">
+        <h2 class="font-display text-[1.5rem] mb-10" style="font-stretch: 86%; font-weight: 500">
+          The build
+        </h2>
+        <div class="space-y-16">
+          {
+            c.build.map((b) => (
+              <article>
+                <h3 class="font-display text-[1.2rem] text-ink" style="font-stretch: 88%; font-weight: 500">
+                  {b.heading}
+                </h3>
+                <p class="font-prose text-[16px] leading-[1.75] text-ink-dim mt-4 max-w-[66ch]">
+                  {b.body}
+                </p>
+
+                {
+                  b.figure.kind === "flow" && (
+                    <Panel class="mt-8">
+                      <div class="p-6 sm:p-8">
+                        <FlowSchematic
+                          nodes={b.figure.nodes}
+                          edges={b.figure.edges}
+                          caption={b.figure.caption}
+                        />
+                      </div>
+                    </Panel>
+                  )
+                }
+
+                {
+                  b.figure.kind === "evals" && (
+                    <Panel class="mt-8">
+                      <div class="p-6 sm:p-8">
+                        <EvalGrid total={120} columns={20} />
+                        <p class="font-mono text-[11px] text-ink-dim mt-5">{b.figure.caption}</p>
+                      </div>
+                    </Panel>
+                  )
+                }
+              </article>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    {/* ── The outcome ───────────────────────────────────────── */}
+    <section class="px-6 py-16">
+      <div class="mx-auto max-w-4xl">
+        <Rule class="mb-10" />
+        <h2 class="font-display text-[1.5rem] mb-9" style="font-stretch: 86%; font-weight: 500">
+          The outcome
+        </h2>
+        <ul class="grid gap-8 sm:grid-cols-3 list-none p-0">
+          {
+            c.outcome.map((o) => (
+              <li>
+                <p
+                  class="font-display text-gold text-[clamp(2rem,5vw,2.8rem)] leading-none tabular-nums"
+                  style="font-stretch: 84%; font-weight: 500"
+                >
+                  {o.value}
+                </p>
+                <p class="micro mt-4 leading-[1.6] max-w-[24ch]">{o.label}</p>
+              </li>
+            ))
+          }
+        </ul>
+
+        <Panel class="mt-14">
+          <div class="p-7 sm:p-8">
+            <Label class="mb-4">What I would do differently</Label>
+            <p class="font-prose text-[16px] leading-[1.75] max-w-[62ch]">{c.retrospective}</p>
+          </div>
+        </Panel>
+      </div>
+    </section>
+
+    {/* ── Next ──────────────────────────────────────────────── */}
+    <footer class="px-6 pt-10 pb-20">
+      <div class="mx-auto max-w-4xl">
+        <Rule class="mb-8" />
+        <div class="flex flex-wrap items-end justify-between gap-6">
+          <div>
+            <Label class="mb-3">Next case</Label>
+            <a
+              href={`/work/${next.slug}`}
+              class="edge-grow font-display text-[clamp(1.3rem,3vw,1.8rem)]"
+              style="font-stretch: 86%; font-weight: 500"
+            >
+              {next.title}
+            </a>
+          </div>
+          <a href={`mailto:${profile.email}`} class="edge-grow font-mono text-[12px] tracking-[0.1em] text-gold">
+            {profile.email}
+          </a>
+        </div>
+      </div>
+    </footer>
+  </main>
+</Base>
