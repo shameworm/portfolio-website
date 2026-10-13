@@ -28,11 +28,3 @@ Static personal site. Astro, Tailwind v4, zero client-side JavaScript.
 Type: Archivo (display, width axis), Source Serif 4 (case prose), IBM Plex Mono
 (all metadata). Self-hosted via `@fontsource`; the latin cuts are preloaded in
 `src/layouts/Base.astro` because the swap was measurably shifting layout.
-
-## Content
-
-All copy is typed data in `src/content/`. Case bodies are in `cases.ts`.
-
-**Content-safety rule:** case prose and schematic labels describe architectural
-patterns and publicly observable behaviour only — never proprietary internals,
-schemas, prompts, or customer data.
