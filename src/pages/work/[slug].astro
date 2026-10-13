@@ -1,5 +1,6 @@
 ---
 import Base from "@/layouts/Base.astro";
+import { url } from "@/lib/path";
 import Panel from "@/components/primitives/Panel.astro";
 import Label from "@/components/primitives/Label.astro";
 import Rule from "@/components/primitives/Rule.astro";
@@ -29,7 +30,7 @@ const meta = [
     {/* ── Masthead ──────────────────────────────────────────── */}
     <header class="px-6 pt-14 pb-16 sm:pt-16">
       <div class="mx-auto max-w-4xl">
-        <a href="/" class="edge-grow font-mono text-[12px] tracking-[0.1em] text-ink-dim">
+        <a href={url("/")} class="edge-grow font-mono text-[12px] tracking-[0.1em] text-ink-dim">
           {profile.name}
         </a>
 
@@ -170,7 +171,7 @@ const meta = [
           <div>
             <Label class="mb-3">Next case</Label>
             <a
-              href={`/work/${next.slug}`}
+              href={url(`/work/${next.slug}`)}
               class="edge-grow font-display text-[clamp(1.3rem,3vw,1.8rem)]"
               style="font-stretch: 86%; font-weight: 500"
             >

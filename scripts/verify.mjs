@@ -1,7 +1,8 @@
 import { chromium } from "playwright";
 import { readdirSync } from "node:fs";
 
-const BASE = "http://localhost:4123";
+// Mirrors the deployed base path; override when serving under a subpath.
+const BASE = process.env.VERIFY_BASE ?? "http://localhost:4123";
 
 // Derive routes from the build so a renamed slug fails the build, not the test.
 const caseSlugs = readdirSync("dist/work", { withFileTypes: true })
