@@ -36,10 +36,3 @@ All copy is typed data in `src/content/`. Case bodies are in `cases.ts`.
 **Content-safety rule:** case prose and schematic labels describe architectural
 patterns and publicly observable behaviour only — never proprietary internals,
 schemas, prompts, or customer data.
-
-## Before launch
-
-- [ ] Review all three case pages: the build sections are reconstructed from CV
-      bullets and the retrospectives need rewriting in Dmytro's own words.
-- [ ] Add an OG image at `public/og.png` and reference it in `Base.astro`.
-- [ ] Set the production domain.
